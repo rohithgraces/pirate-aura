@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatGPT Clone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // JavaScript will go here
+    </script>
+    <style>
+body.dark .app-container {
+    background: #1e1e1e;
+}
+
+body.dark .header {
+    background: #000;
+}
+
+body.dark .chat-area {
+    background: #121212;
+}
+
+body.dark .ai-bubble {
+    background: #1f1f1f;
+    color: #eee;
+    border-color: #333;
+}
+
+body.dark .user-bubble {
+    background: linear-gradient(135deg, white, white);
+}
+
+body.dark #messageInput {
+    background: #1f1f1f;
+    color: white;
+    border-color: #333;
+}
+
+/* Dark mode – AI message text */
+.dark .ai-bubble {
+   color:white;
+}
+
+/* Dark mode – USER message text */
+.dark .user-bubble {
+    color: #000; /* black text */
+}
+}
+
+#themeToggle {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+        /* ALL STYLES ARE HERE - NO EXTERNAL FILES */
+        #sendButton {
+    background: linear-gradient(135deg, #19c37d, #17b171);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(25, 195, 125, 0.3);
+}
+#micButton {
+    background: #202123;
+    color: white;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+#attachButton {
+    background: #eef3f8;
+    color: #1f2d3a;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+#attachButton:hover,
+#micButton:hover {
+    transform: scale(1.05);
+}
+#attachButton:active,
+#micButton:active {
+    transform: scale(0.95);
+}
+#attachmentInput {
+    display: none;
+}
+
+        body {
+            margin: 0;
+            padding: 18px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f2f2f2;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .app-container {
+            width: min(92vw, 760px);
+            max-width: 760px;
+            height: min(92vh, 980px);
+            min-height: 720px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: #202123;
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .header span {
+            background: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f7f7f8;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            flex-direction: row-reverse;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            flex-shrink: 0;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .user-avatar {
+            background: linear-gradient(135deg, #19c37d, #17b171);
+        }
+        
+        .ai-avatar {
+            background: linear-gradient(135deg, #10a37f, #0d8c6c);
+        }
+        
+        .text-bubble {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            font-size: 15px;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .user-bubble {
+            background: linear-gradient(135deg, white, white);
+            color: black;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .ai-bubble {
+            background: white;
+            color: #333;
+            border: 1px solid #e5e5e5;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .input-container {
+            padding: 18px;
+            background: white;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            flex-direction: column;
+        }
+        .input-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .attachment-preview {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 12px;
+            border: 1px solid #d9e2ea;
+            border-radius: 14px;
+            background: #f6faf8;
+        }
+        .attachment-preview[hidden] {
+            display: none;
+        }
+        .attachment-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .attachment-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #dfe8ee;
+            flex-shrink: 0;
+        }
+        .attachment-file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #dfe8ee;
+            color: #2e4458;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .attachment-text {
+            min-width: 0;
+        }
+        .attachment-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2d3a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .attachment-meta {
+            font-size: 12px;
+            color: #6c7b88;
+        }
+        .attachment-remove {
+            background: transparent;
+            border: none;
+            color: #6c7b88;
+            cursor: pointer;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        
+        #messageInput {
+            flex: 1;
+            padding: 16px 18px;
+            border: 2px solid #e5e5e5;
+            border-radius: 16px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        #messageInput:focus {
+            border-color: #19c37d;
+            box-shadow: 0 0 0 3px rgba(25, 195, 125, 0.2);
+        }
+        
+        #sendButton {
+            background: linear-gradient(135deg, #19c37d, #17b171);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(25, 195, 125, 0.3);
+        }
+        
+        #sendButton:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(25, 195, 125, 0.4);
+        }
+        
+        #sendButton:active {
+            transform: scale(0.98);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: 15px;
+            align-items: center;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #ccc;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+            40% { transform: translateY(-8px); opacity: 1; }
+        }
+        
+        /* Scrollbar styling */
+        .chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-area::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 900px) {
+            body {
+                padding: 10px;
+            }
+
+            .app-container {
+                width: 100%;
+                max-width: 100%;
+                min-height: calc(100vh - 20px);
+                height: calc(100vh - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .app-container {
+                height: 100vh;
+                border-radius: 0;
+                max-width: 100%;
+                min-height: 100vh;
+                width: 100%;
+            }
+            
+            .text-bubble {
+                max-width: 88%;
+                font-size: 14px;
+                padding: 12px 16px;
+            }
+
+            .message-content {
+                max-width: 88%;
+            }
+            
+            .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+        }
+        /* 🌙 STRONG DARK MODE (VISIBLE FIX) */
+.app-container.dark {
+    background: #0f0f0f;
+}
+
+.app-container.dark .header {
+    background: linear-gradient(135deg, #0f8b6d, #0a5f4c);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.app-container.dark .chat-area {
+    background: #0f0f0f;
+}
+.app-container.dark .input-container {
+    background: #000;
+    border-top: 1px solid #333;
+}
+.app-container.dark #attachButton {
+    background: #1a2730;
+    color: #eef8f2;
+}
+.app-container.dark .attachment-preview {
+    background: #111a20;
+    border-color: #22313d;
+}
+.app-container.dark .attachment-name {
+    color: #eef8f2;
+}
+.app-container.dark .attachment-meta,
+.app-container.dark .attachment-remove {
+    color: #aebdca;
+}
+.app-container.dark .attachment-file-icon {
+    background: #1b2a34;
+    color: #eef8f2;
+}
+
+.app-container.dark .brand-name,
+.app-container.dark .logo-emoji,
+.app-container.dark .icon-btn,
+.app-container.dark .header-action-btn {
+    color: #f8fff9;
+}
+
+.app-container.dark .header span {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.app-container.dark .menu-toggle {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.app-container.dark .menu-toggle:hover,
+.app-container.dark #themeToggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+}
+
+.app-container.dark .ai-bubble {
+    background: #1c1c1c;
+    color: #f1f1f1;
+    border-color: #333;
+}
+/* DARK MODE – AI MESSAGE 
+.app-container.dark .ai-bubble {
+    background: linear-gradient(135deg, #1a1a1a, #111);
+    color: #f1f1f1;
+    border: 1px solid #333;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+/* Dark mode – USER message text */
+.app-container.dark .user-bubble {
+    background: linear-gradient(135deg, #18a56d, #0f7f54);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.app-container.dark #messageInput {
+    background: white;
+    color: black;
+    border-color: #333;
+}
+/* 🏴‍☠️ Pirate Aura Branding */
+.logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.brand-name {
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: #000;
+}
+/* 🏴‍☠️ FINAL PIRATE HEADER */
+.header {
+    background: #19c37d;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.brand-name {
+    flex: 1;
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: #000;
+}
+
+.theme-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.logo-emoji {
+    font-size: 26px;
+}
+.copy-btn {
+    float: right;
+    margin-left: 10px;
+    cursor: pointer;
+    opacity: 0.6;
+    font-size: 14px;
+}
+
+.copy-btn:hover {
+    opacity: 1;
+}
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+.message-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 75%;
+}
+.message-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #7a7a7a;
+    padding: 0 6px;
+}
+.user-message .message-meta {
+    justify-content: flex-end;
+}
+.message-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.message-action-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: inherit;
+    opacity: 0.75;
+    padding: 0;
+}
+.message-action-btn:hover {
+    opacity: 1;
+}
+.typing-label {
+    font-size: 12px;
+    color: #888;
+}
+.header-action-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: inherit;
+    padding: 6px 10px;
+    border-radius: 14px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.header-action-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+.app-container.dark .message-meta {
+    color: #c2c2c2;
+}
+.header-menu {
+    position: relative;
+}
+.menu-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.menu-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 150px;
+    background: #ffffff;
+    color: #222;
+    border-radius: 14px;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+    border: 1px solid #e8e8e8;
+    padding: 8px;
+    display: none;
+    z-index: 50;
+}
+.menu-dropdown.open {
+    display: block;
+}
+.menu-item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: inherit;
+}
+.menu-item:hover {
+    background: #f3f5f7;
+}
+.app-container.dark .menu-dropdown {
+    background: #1b1b1b;
+    color: #f4f4f4;
+    border-color: #333;
+}
+.app-container.dark .menu-item:hover {
+    background: #2b2b2b;
+}
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: inherit;
+}
+<style>
+</style>
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+<div class="header">
+    <span class="logo-emoji">☠️</span>
+    <span class="brand-name">Pɪʀᴀᴛᴇ⚓Aᴜʀᴀ</span>
+
+    <div class="header-actions">
+        <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme">&#9789;</button>
+        <div class="header-menu">
+            <button id="menuToggle" class="icon-btn menu-toggle" type="button" aria-label="Open menu">&#8942;</button>
+            <div id="headerMenu" class="menu-dropdown">
+                <button id="newChatButton" class="menu-item" type="button">New Chat</button>
+                <button id="clearChatButton" class="menu-item" type="button">Clear Chat</button>
+            </div>
+        </div>
+    </div>
+</div>
+        <!-- Chat Messages Area -->
+        <div class="chat-area" id="chatArea">
+            <!-- Messages will appear here -->
+        </div>
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="attachment-preview" id="attachmentPreview" hidden>
+                <div class="attachment-info">
+                    <div class="attachment-file-icon" id="attachmentIcon">FILE</div>
+                    <img class="attachment-thumb" id="attachmentThumb" alt="Attachment preview" hidden>
+                    <div class="attachment-text">
+                        <div class="attachment-name" id="attachmentName"></div>
+                        <div class="attachment-meta" id="attachmentMeta"></div>
+                    </div>
+                </div>
+                <button class="attachment-remove" id="removeAttachmentButton" type="button">Remove</button>
+            </div>
+            <div class="input-row">
+                <button id="attachButton" type="button" aria-label="Attach image or file">&#128206;</button>
+                <input type="file" id="attachmentInput" accept="image/*,.txt,.csv,.json,.pdf">
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="Message ChatGPT..." 
+                    autocomplete="off"
+                >
+                <button id="sendButton">&#10148;</button>
+                <button id="micButton" type="button" aria-label="Start voice input">&#127908;</button>
+            </div>
+        </div>
+    </div>
+    <script>
+      // Text-to-Speech Function
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 1; // Speed (0.5 slow, 1 normal, 1.5 fast)
+        utterance.pitch = 1; // Voice pitch
+        window.speechSynthesis.speak(utterance);
+    }
+}
+        // DOM Elements
+        const chatArea = document.getElementById('chatArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const attachButton = document.getElementById('attachButton');
+        const attachmentInput = document.getElementById('attachmentInput');
+        const attachmentPreview = document.getElementById('attachmentPreview');
+        const attachmentThumb = document.getElementById('attachmentThumb');
+        const attachmentIcon = document.getElementById('attachmentIcon');
+        const attachmentName = document.getElementById('attachmentName');
+        const attachmentMeta = document.getElementById('attachmentMeta');
+        const removeAttachmentButton = document.getElementById('removeAttachmentButton');
+        
+        // Voice Input Feature
+const micButton = document.getElementById("micButton");
+let recognition;
+let isListening = false;
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.onresult = function(event) {
+        const voiceText = event.results[0][0].transcript;
+        messageInput.value = voiceText;
+        sendMessage();
+    };
+
+    recognition.onerror = function() {
+        isListening = false;
+        micButton.innerHTML = '&#127908;';
+    };
+
+    recognition.onend = function() {
+        isListening = false;
+        micButton.innerHTML = '&#127908;';
+    };
+} else {
+    micButton.title = 'Voice input is not supported in this browser.';
+}
+
+micButton.addEventListener("click", () => {
+    if (!recognition) {
+        alert('Voice input is not supported in this browser. Try Chrome or Edge.');
+        return;
+    }
+
+    if (!isListening) {
+        isListening = true;
+        micButton.innerHTML = '&#127911;';
+        recognition.start();
+    } else {
+        recognition.stop();
+        micButton.innerHTML = '&#127908;';
+        isListening = false;
+    }
+});
+        // Chat state
+        let isProcessing = false;
+        let chatHistory = [];
+        let pendingAttachment = null;
+        let pendingAttachmentPreviewUrl = "";
+        
+        // Initialize
+        window.onload = function() {
+            // Load any saved chat history
+            loadChatHistory();
+            
+            // Focus input field
+            messageInput.focus();
+            
+            // Add welcome message after delay
+            setTimeout(() => {
+                if (chatHistory.length === 0) {
+                    displayMessage('ai', 'Hello! I am Pirate Aura, your assistant. How can I help you today?');
+                }
+            }, 800);
+        };
+        
+        // Load chat history from localStorage
+        function loadChatHistory() {
+            try {
+                const saved = localStorage.getItem('chatHistory');
+                if (saved) {
+                    chatHistory = JSON.parse(saved);
+                    chatHistory.forEach(msg => {
+                        displayMessage(msg.role, msg.content, false);
+                    });
+                }
+            } catch (e) {
+                console.log("Could not load chat history");
+            }
+        }
+        
+        // Save chat to localStorage
+        function saveChatHistory() {
+            try {
+                localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            } catch (e) {
+                console.log("Could not save chat history");
+            }
+        }
+        
+        function formatTimeStamp(date = new Date()) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function copyMessageText(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalLabel = button.textContent;
+                button.textContent = 'Copied';
+                setTimeout(() => {
+                    button.textContent = originalLabel;
+                }, 1200);
+            }).catch(() => {
+                alert('Copy failed. Please try again.');
+            });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) {
+                return `${bytes} B`;
+            }
+
+            if (bytes < 1024 * 1024) {
+                return `${(bytes / 1024).toFixed(1)} KB`;
+            }
+
+            return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        }
+
+        function clearPendingAttachment() {
+            pendingAttachment = null;
+            attachmentInput.value = '';
+            attachmentPreview.hidden = true;
+            attachmentName.textContent = '';
+            attachmentMeta.textContent = '';
+            attachmentThumb.hidden = true;
+            attachmentThumb.removeAttribute('src');
+            attachmentIcon.hidden = false;
+
+            if (pendingAttachmentPreviewUrl) {
+                URL.revokeObjectURL(pendingAttachmentPreviewUrl);
+                pendingAttachmentPreviewUrl = '';
+            }
+        }
+
+        function renderAttachmentPreview(file) {
+            attachmentPreview.hidden = false;
+            attachmentName.textContent = file.name;
+            attachmentMeta.textContent = `${file.type || 'File'} • ${formatFileSize(file.size)}`;
+
+            if (pendingAttachmentPreviewUrl) {
+                URL.revokeObjectURL(pendingAttachmentPreviewUrl);
+                pendingAttachmentPreviewUrl = '';
+            }
+
+            if (file.type.startsWith('image/')) {
+                pendingAttachmentPreviewUrl = URL.createObjectURL(file);
+                attachmentThumb.src = pendingAttachmentPreviewUrl;
+                attachmentThumb.hidden = false;
+                attachmentIcon.hidden = true;
+            } else {
+                attachmentThumb.hidden = true;
+                attachmentThumb.removeAttribute('src');
+                attachmentIcon.hidden = false;
+                attachmentIcon.textContent = file.name.split('.').pop()?.slice(0, 4).toUpperCase() || 'FILE';
+            }
+        }
+
+        // Display a message in the chat
+        function displayMessage(role, content, saveToHistory = true) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${role}-message`;
+
+    const avatar = document.createElement('div');
+    avatar.className = `avatar ${role}-avatar`;
+    avatar.textContent = role === 'user' ? 'ME' : 'AI';
+
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content';
+
+    const bubble = document.createElement('div');
+    bubble.className = `text-bubble ${role}-bubble`;
+    bubble.textContent = content;
+
+    const meta = document.createElement('div');
+    meta.className = 'message-meta';
+
+    const time = document.createElement('span');
+    time.textContent = formatTimeStamp();
+    meta.appendChild(time);
+
+    if (role === 'ai' || role === 'user') {
+        const actions = document.createElement('div');
+        actions.className = 'message-actions';
+
+        const copyButton = document.createElement('button');
+        copyButton.className = 'message-action-btn';
+        copyButton.type = 'button';
+        copyButton.textContent = 'Copy';
+        copyButton.addEventListener('click', () => copyMessageText(content, copyButton));
+
+        if (role === 'ai') {
+            const speakButton = document.createElement('button');
+            speakButton.className = 'message-action-btn';
+            speakButton.type = 'button';
+            speakButton.textContent = 'Speak';
+            speakButton.addEventListener('click', () => speak(content));
+            actions.appendChild(speakButton);
+        }
+
+        actions.appendChild(copyButton);
+        meta.appendChild(actions);
+    }
+
+    messageContent.appendChild(bubble);
+    messageContent.appendChild(meta);
+    messageDiv.appendChild(avatar);
+    messageDiv.appendChild(messageContent);
+    chatArea.appendChild(messageDiv);
+
+    if (saveToHistory) {
+        chatHistory.push({ role, content });
+        saveChatHistory();
+    }
+
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+        // Show typing indicator
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message';
+            typingDiv.id = 'typingIndicator';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar ai-avatar';
+            avatar.textContent = 'AI';
+            
+            const dots = document.createElement('div');
+            dots.className = 'text-bubble ai-bubble typing-indicator';
+            dots.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <span class="typing-label">AI is typing...</span>
+            `;
+            
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(dots);
+            chatArea.appendChild(typingDiv);
+            
+            // Scroll to bottom
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        // Remove typing indicator
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+                    // --- College Custom Q&A Dataset ---
+            const datasetIntents = [
+    {
+        keywords: ['admission', 'admissions', 'apply', 'application', 'counseling', 'counselling'],
+        response: "Admissions are based on counseling."
+    },
+    {
+        keywords: ['course', 'courses', 'department', 'departments', 'branch', 'branches'],
+        response: "We offer CSE, ECE, EEE, Mechanical, Civil and Robotics."
+    },
+    {
+        keywords: ['timing', 'time', 'working hours', 'college hours', 'open time'],
+        response: "College timing is 9 AM to 5 PM, Monday to Friday."
+    },
+    {
+        keywords: ['hostel', 'mess', 'accommodation'],
+        response: "Hostel available for boys and girls with mess."
+    },
+    {
+        keywords: ['contact', 'phone', 'email', 'call'],
+        response: "Email: info@tpgit.edu.in, Phone: 0416-2267762."
+    },
+    {
+        keywords: ['fees', 'fee', 'tuition'],
+        response: "Fees depend on the course and semester."
+    },
+    {
+        keywords: ['exam', 'exams', 'semester'],
+        response: "Semester exams are based on the Anna University schedule."
+    },
+    {
+        keywords: ['result', 'results', 'mark', 'marks'],
+        response: "Results are published on the Anna University website."
+    },
+    {
+        keywords: ['library', 'books'],
+        response: "Library open 9 AM to 5 PM. Borrow up to 5 books."
+    },
+    {
+        keywords: ['bus', 'transport'],
+        response: "Bus facilities are not available."
+    },
+    {
+        keywords: ['sports', 'games', 'playground'],
+        response: "Facilities for cricket, football, basketball, indoor games."
+    },
+    {
+        keywords: ['club', 'clubs', 'coding club', 'robotics club', 'music club'],
+        response: "Coding, robotics, arts, and music clubs available."
+    },
+    {
+        keywords: ['scholarship', 'scholarships'],
+        response: "Community & Pragati scholarships available."
+    },
+    {
+        keywords: ['principal', 'head of college'],
+        response: "Principal: Letitia."
+    },
+    {
+        keywords: ['event', 'events', 'culturals', 'technical fest'],
+        response: "Annual cultural & technical events in December."
+    },
+    {
+        keywords: ['placement', 'placements', 'job', 'jobs', 'company', 'companies'],
+        response: "Good placement records. Top companies visit every year."
+    },
+    {
+        keywords: ['address', 'location', 'where is college', 'where is the college'],
+        response: "Thanthai Periyar Government Institute of Technology, Vellore."
+    }
+];
+        // Get AI response
+        async function getAIResponse(userMessage, attachment = null) {
+            const lowerMsg = userMessage.toLowerCase().trim();
+            const hasWord = (word) => new RegExp(`\\b${word}\\b`, 'i').test(lowerMsg);
+            if (!attachment) {
+            const matchedIntent = datasetIntents.find((intent) =>
+                intent.keywords.some((keyword) => {
+                    if (keyword.includes(' ')) {
+                        return lowerMsg.includes(keyword);
+                    }
+                    return hasWord(keyword);
+                })
+            );
+            if (matchedIntent) {
+                return matchedIntent.response;
+            }
+            if (hasWord('hello') || hasWord('hi') || hasWord('hey')) {
+                return "Hello! 👋 I'm Pirate⚓Aura AI assistant created by OpenAI. How can I help you today?";
+            }
+            
+            if (lowerMsg === 'name' || lowerMsg.includes('your name')) {
+                return "I'm Pirateᴇ⚓Aurᴀ, which stands for 'Chat Generative Pre-trained Transformer'. I'm an AI language model developed by OpenAI.";
+            }
+            
+            if (lowerMsg.includes('who are you') || lowerMsg.includes('what are you')) {
+                return "I'm an AI assistant based on the GPT architecture. I can understand and generate human-like text, answer questions, help with writing, coding, and much more!";
+            }
+            
+            if (hasWord('ai') || lowerMsg.includes('artificial intelligence')) {
+                return "AI (Artificial Intelligence) refers to machines or software that exhibit human-like intelligence. This includes learning, reasoning, problem-solving, and understanding natural language.";
+            }
+            
+            if (hasWord('computer')) {
+                return "A computer is an electronic device that processes data according to instructions (programs). Modern computers can perform millions of calculations per second and run complex software.";
+            }
+            
+            if (lowerMsg.includes('how are you') || lowerMsg.includes('how do you feel')) {
+                return "As an AI, I don't have feelings, but I'm functioning perfectly and ready to help you with anything you need! 😊";
+            }
+            
+            if (lowerMsg.includes('thank')) {
+                return "You're welcome! 😊 Is there anything else I can help you with today?";
+            }
+            
+            if (hasWord('bye') || lowerMsg.includes('goodbye')) {
+                return "Goodbye! Feel free to return anytime if you have more questions. Have a great day! 👋";
+            }
+            
+            if (lowerMsg.includes('love') || lowerMsg.includes('like you')) {
+                return "I appreciate that! As an AI, I'm here to assist and provide helpful responses. How else can I help you today?";
+            }
+            
+            if (hasWord('joke') || hasWord('funny')) {
+                const jokes = [
+                    "Why don't scientists trust atoms? Because they make up everything!",
+                    "Why did the computer go to the doctor? It had a virus!",
+                    "What do you call a fake noodle? An impasta!",
+                    "Why was the math book sad? It had too many problems."
+                ];
+                return jokes[Math.floor(Math.random() * jokes.length)];
+            }
+            }
+            
+            // Default intelligent responses
+            const responses = [
+                "That's an interesting question! Let me provide you with some information about that.",
+                "I understand what you're asking. Here's what I know about that topic:",
+                "Great question! Based on my knowledge, here's the information you're looking for.",
+                "I'd be happy to help with that. Here's what I can tell you:",
+                "Thanks for your question! This is an important topic. Here's my response:",
+                "I've analyzed your question and here's the most accurate information I can provide:",
+                "That's a thoughtful question. Let me share some insights on that subject."
+            ];
+
+            let response;
+
+            if (attachment) {
+                const formData = new FormData();
+                formData.append('message', userMessage);
+                formData.append('history', JSON.stringify(chatHistory.slice(-6)));
+                formData.append('attachment', attachment);
+
+                response = await fetch('/api/chat', {
+                    method: 'POST',
+                    body: formData
+                });
+            } else {
+                response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        history: chatHistory.slice(-6)
+                    })
+                });
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || 'API request failed');
+            }
+
+            const data = await response.json();
+            return data.reply || responses[Math.floor(Math.random() * responses.length)] + " If you need more details, feel free to ask!";
+        }
+        
+        // Send message function
+        async function sendMessage() {
+            const attachmentToSend = pendingAttachment;
+            const message = messageInput.value.trim() || (attachmentToSend ? 'Please analyze this attachment.' : '');
+            
+            // Validation
+            if ((!message && !attachmentToSend) || isProcessing) return;
+            
+            // Disable input during processing
+            isProcessing = true;
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            attachButton.disabled = true;
+            micButton.disabled = true;
+            
+            // Add user message
+            const userDisplayMessage = attachmentToSend
+                ? `${message}\n[Attachment: ${attachmentToSend.name}]`
+                : message;
+            displayMessage('user', userDisplayMessage);
+            
+            // Clear input
+            messageInput.value = '';
+            clearPendingAttachment();
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                // Get AI response
+                const aiResponse = await getAIResponse(message, attachmentToSend);
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Add AI response
+                displayMessage('ai', aiResponse);
+                
+            } catch (error) {
+                removeTypingIndicator();
+                displayMessage('ai', `Sorry, I encountered an error: ${error.message}`);
+            } finally {
+                // Re-enable input
+                isProcessing = false;
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                attachButton.disabled = false;
+                micButton.disabled = false;
+                
+                // Focus input
+                setTimeout(() => {
+                    messageInput.focus();
+                }, 100);
+            }
+        }
+        
+        // Event Listeners
+        sendButton.addEventListener('click', sendMessage);
+        attachButton.addEventListener('click', () => attachmentInput.click());
+        removeAttachmentButton.addEventListener('click', clearPendingAttachment);
+        attachmentInput.addEventListener('change', function(event) {
+            const file = event.target.files?.[0];
+            if (!file) {
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('Please upload a file smaller than 10 MB.');
+                clearPendingAttachment();
+                return;
+            }
+
+            pendingAttachment = file;
+            renderAttachmentPreview(file);
+        });
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Auto-resize input (for multi-line if enabled later)
+        messageInput.addEventListener('input', function() {
+            if (this.value.includes('\n')) {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            }
+        });
+        
+        function resetChatState() {
+            chatArea.innerHTML = '';
+            chatHistory = [];
+            localStorage.removeItem('chatHistory');
+            clearPendingAttachment();
+        }
+
+        // Clear chat function (optional)
+        window.clearChat = function(showMessage = true) {
+            if (confirm("Clear all chat history?")) {
+                resetChatState();
+                if (showMessage) {
+                    setTimeout(() => {
+                        displayMessage('ai', 'Chat cleared. How can I help you today?');
+                    }, 300);
+                }
+            }
+        };
+        // 🌗 Theme Toggle
+const themeToggle = document.getElementById("themeToggle");
+const clearChatButton = document.getElementById('clearChatButton');
+const newChatButton = document.getElementById('newChatButton');
+const menuToggle = document.getElementById('menuToggle');
+const headerMenu = document.getElementById('headerMenu');
+const appContainer = document.querySelector(".app-container");
+
+menuToggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    headerMenu.classList.toggle('open');
+});
+
+document.addEventListener('click', (event) => {
+    if (!headerMenu.contains(event.target) && !menuToggle.contains(event.target)) {
+        headerMenu.classList.remove('open');
+    }
+});
+
+clearChatButton.addEventListener('click', () => {
+    headerMenu.classList.remove('open');
+    window.clearChat(true);
+});
+newChatButton.addEventListener('click', () => {
+    headerMenu.classList.remove('open');
+    resetChatState();
+    setTimeout(() => {
+        displayMessage('ai', 'New chat started. What would you like to ask?');
+    }, 300);
+});
+
+themeToggle.addEventListener("click", () => {
+    const isDark = appContainer.classList.toggle("dark");
+
+    appContainer.style.background = isDark ? "#0f0f0f" : "#ffffff";
+    themeToggle.textContent = isDark ? "☀️" : "🌙";
+
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+});
+
+// Load saved theme
+if (localStorage.getItem("theme") === "dark") {
+    appContainer.classList.add("dark");
+    appContainer.style.background = "#0f0f0f";
+    themeToggle.textContent = "☀️";
+}
+    </script>
+</body>
+</html>
