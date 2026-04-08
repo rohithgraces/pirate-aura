@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pirate Aura Admin Panel</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #eef4f1;
+            --panel: #ffffff;
+            --ink: #17312b;
+            --muted: #648078;
+            --line: #d7e5df;
+            --brand: #19c37d;
+            --brand-dark: #139662;
+            --danger: #ca4d4d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(180deg, #edf8f3 0%, #e9eff7 100%);
+            color: var(--ink);
+        }
+
+        .page {
+            min-height: 100dvh;
+            padding: 24px;
+        }
+
+        .login-screen {
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .login-screen[hidden] {
+            display: none;
+        }
+
+        .login-card {
+            width: min(100%, 420px);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            box-shadow: 0 14px 36px rgba(18, 51, 43, 0.12);
+            padding: 26px;
+        }
+
+        .login-card h2 {
+            margin: 0 0 8px;
+        }
+
+        .login-card p {
+            margin: 0 0 18px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .login-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .shell {
+            max-width: 1080px;
+            margin: 0 auto;
+            display: grid;
+            gap: 18px;
+        }
+
+        .hero,
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: 0 12px 30px rgba(18, 51, 43, 0.08);
+        }
+
+        .hero {
+            padding: 22px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hero h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn,
+        .btn-link {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--brand);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--brand-dark);
+        }
+
+        .btn-secondary {
+            background: #edf7f2;
+            color: var(--ink);
+            border: 1px solid var(--line);
+        }
+
+        .btn-secondary:hover {
+            background: #e2f2ea;
+        }
+
+        .panel {
+            padding: 20px;
+        }
+
+        .toolbar {
+            display: grid;
+            grid-template-columns: 1fr 220px auto auto;
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 12px 14px;
+            font: inherit;
+            color: var(--ink);
+            background: #fbfefd;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .status-card {
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: #f5fbf8;
+            border: 1px solid var(--line);
+            min-width: 180px;
+        }
+
+        .status-card strong {
+            display: block;
+            font-size: 20px;
+            margin-top: 4px;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #ebfaf2;
+            color: #0d6a44;
+            border: 1px solid #ccefdc;
+        }
+
+        .message.error {
+            background: #fff1f1;
+            color: var(--danger);
+            border: 1px solid #f4caca;
+        }
+
+        .dataset-list {
+            display: grid;
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .dataset-item {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: #fafdfe;
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .dataset-item-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dataset-item-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .delete-btn {
+            background: #fff4f4;
+            color: var(--danger);
+            border: 1px solid #f2d3d3;
+        }
+
+        .delete-btn:hover {
+            background: #ffe9e9;
+        }
+
+        .field-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .answer-box {
+            min-height: 110px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            padding: 28px 18px;
+            border: 1px dashed var(--line);
+            border-radius: 18px;
+            text-align: center;
+            color: var(--muted);
+            background: #f9fdfb;
+        }
+
+        @media (max-width: 860px) {
+            .page {
+                padding: 14px;
+            }
+
+            .hero {
+                padding: 18px;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .toolbar {
+                grid-template-columns: 1fr;
+            }
+
+            .dataset-item {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <p>Enter the admin password to open the Pirate Aura dataset panel.</p>
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" type="password" placeholder="Enter admin password">
+            <div class="login-actions">
+                <button id="loginButton" class="btn btn-primary" type="button">Open Admin Panel</button>
+                <a class="btn btn-secondary" href="/index.html">Back to Chat</a>
+            </div>
+            <div id="loginMessage" class="message"></div>
+        </div>
+    </div>
+
+    <div id="adminPage" class="page" hidden>
+        <div class="shell">
+            <section class="hero">
+                <div>
+                    <h1>Pirate Aura Admin Panel</h1>
+                    <p>Update the TPGIT college dataset here. Each item must have a <code>keywords</code> array and a <code>response</code> string.</p>
+                </div>
+                <div class="actions">
+                    <a class="btn btn-secondary" href="/index.html">Back to Chat</a>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="status-row">
+                    <div class="status-card">
+                        Dataset Entries
+                        <strong id="entryCount">0</strong>
+                    </div>
+                    <div class="status-card">
+                        Admin Protection
+                        <strong id="protectionStatus">Checking...</strong>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <div>
+                        <label for="adminKey">Admin Key</label>
+                        <input id="adminKey" type="password" placeholder="Enter admin key if server protection is enabled">
+                    </div>
+                    <div>
+                        <label for="searchBox">Find Keyword</label>
+                        <input id="searchBox" type="text" placeholder="Search inside dataset">
+                    </div>
+                    <button id="reloadButton" class="btn btn-secondary" type="button">Reload</button>
+                    <button id="addQuestionButton" class="btn btn-secondary" type="button">Add Question</button>
+                    <button id="saveButton" class="btn btn-primary" type="button">Save Dataset</button>
+                </div>
+
+                <p class="hint">Edit the keywords and answer for each item. Keywords should be comma-separated, for example <code>fees, college fee, tuition</code>.</p>
+                <div id="datasetList" class="dataset-list"></div>
+                <div class="toolbar-actions">
+                    <button id="addBottomButton" class="btn btn-secondary" type="button">Add Another</button>
+                </div>
+                <div id="statusMessage" class="message"></div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = 'Rohith';
+        const loginScreen = document.getElementById('loginScreen');
+        const adminPage = document.getElementById('adminPage');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginButton = document.getElementById('loginButton');
+        const loginMessage = document.getElementById('loginMessage');
+        const datasetList = document.getElementById('datasetList');
+        const saveButton = document.getElementById('saveButton');
+        const reloadButton = document.getElementById('reloadButton');
+        const addQuestionButton = document.getElementById('addQuestionButton');
+        const addBottomButton = document.getElementById('addBottomButton');
+        const adminKeyInput = document.getElementById('adminKey');
+        const searchBox = document.getElementById('searchBox');
+        const entryCount = document.getElementById('entryCount');
+        const protectionStatus = document.getElementById('protectionStatus');
+        const statusMessage = document.getElementById('statusMessage');
+
+        let fullDataset = [];
+
+        function showLoginMessage(type, text) {
+            loginMessage.className = `message show ${type}`;
+            loginMessage.textContent = text;
+        }
+
+        function showMessage(type, text) {
+            statusMessage.className = `message show ${type}`;
+            statusMessage.textContent = text;
+        }
+
+        function updateStats(dataset) {
+            entryCount.textContent = Array.isArray(dataset) ? dataset.length : 0;
+        }
+
+        function createEmptyEntry() {
+            return {
+                keywords: [''],
+                response: ''
+            };
+        }
+
+        function createDatasetItem(entry = createEmptyEntry(), index = 0) {
+            const item = document.createElement('div');
+            item.className = 'dataset-item';
+            item.innerHTML = `
+                <div class="dataset-item-head">
+                    <div class="dataset-item-title">Question ${index + 1}</div>
+                    <button class="btn delete-btn" type="button" data-action="delete">Delete</button>
+                </div>
+                <div class="field-grid">
+                    <div>
+                        <label>Keywords</label>
+                        <input type="text" class="keywords-input" placeholder="fees, college fee, tuition" value="${(Array.isArray(entry.keywords) ? entry.keywords.join(', ') : '')}">
+                    </div>
+                    <div>
+                        <label>Answer</label>
+                        <textarea class="answer-box" placeholder="Type the answer students should receive.">${entry.response || ''}</textarea>
+                    </div>
+                </div>
+            `;
+            return item;
+        }
+
+        function renderEditor(dataset) {
+            datasetList.innerHTML = '';
+
+            if (!dataset.length) {
+                datasetList.innerHTML = '<div class="empty-state">No dataset entries yet. Click "Add Question" to create the first one.</div>';
+                updateStats(dataset);
+                return;
+            }
+
+            dataset.forEach((entry, index) => {
+                datasetList.appendChild(createDatasetItem(entry, index));
+            });
+
+            updateStats(dataset);
+        }
+
+        function readEditorDataset() {
+            const items = Array.from(datasetList.querySelectorAll('.dataset-item'));
+
+            return items.map((item) => {
+                const keywordValue = item.querySelector('.keywords-input').value;
+                const responseValue = item.querySelector('.answer-box').value;
+
+                return {
+                    keywords: keywordValue
+                        .split(',')
+                        .map((keyword) => keyword.trim())
+                        .filter(Boolean),
+                    response: responseValue.trim()
+                };
+            });
+        }
+
+        function appendNewEntry(entry = createEmptyEntry()) {
+            if (datasetList.querySelector('.empty-state')) {
+                datasetList.innerHTML = '';
+            }
+
+            const currentCount = datasetList.querySelectorAll('.dataset-item').length;
+            datasetList.appendChild(createDatasetItem(entry, currentCount));
+            updateStats(readEditorDataset());
+        }
+
+        function renumberItems() {
+            const items = Array.from(datasetList.querySelectorAll('.dataset-item'));
+            items.forEach((item, index) => {
+                const title = item.querySelector('.dataset-item-title');
+                title.textContent = `Question ${index + 1}`;
+            });
+            updateStats(items.map(() => 1));
+        }
+
+        async function loadDataset() {
+            showMessage('success', 'Loading dataset...');
+            const response = await fetch('/api/dataset');
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Could not load dataset.');
+            }
+
+            fullDataset = Array.isArray(data.dataset) ? data.dataset : [];
+            protectionStatus.textContent = data.protected ? 'Enabled' : 'Off';
+            renderEditor(fullDataset);
+            showMessage('success', 'Dataset loaded successfully.');
+        }
+
+        async function saveDataset() {
+            if (searchBox.value.trim()) {
+                showMessage('error', 'Clear the search box before saving so the full dataset is stored.');
+                return;
+            }
+
+            const parsed = readEditorDataset();
+            const hasInvalidRow = parsed.some((item) => item.keywords.length === 0 || !item.response);
+
+            if (hasInvalidRow) {
+                showMessage('error', 'Every question needs at least one keyword and one answer before saving.');
+                return;
+            }
+
+            let response;
+
+            try {
+                response = await fetch('/api/dataset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': adminKeyInput.value.trim()
+                    },
+                    body: JSON.stringify({
+                        dataset: parsed
+                    })
+                });
+            } catch (error) {
+                throw new Error('Could not reach the server. Reload the page and try again.');
+            }
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Could not save dataset.');
+            }
+
+            fullDataset = parsed;
+            updateStats(fullDataset);
+            showMessage('success', `Dataset saved successfully. ${data.count || fullDataset.length} entries updated.`);
+        }
+
+        function applySearchFilter() {
+            const query = searchBox.value.trim().toLowerCase();
+
+            if (!query) {
+                renderEditor(fullDataset);
+                showMessage('success', 'Showing the full dataset.');
+                return;
+            }
+
+            const filtered = fullDataset.filter((item) => {
+                const keywordText = Array.isArray(item.keywords) ? item.keywords.join(' ') : '';
+                return keywordText.toLowerCase().includes(query) || String(item.response || '').toLowerCase().includes(query);
+            });
+
+            renderEditor(filtered);
+            showMessage('success', `Showing ${filtered.length} matching entries. Clear search to see the full dataset again.`);
+        }
+
+        reloadButton.addEventListener('click', async () => {
+            try {
+                await loadDataset();
+                searchBox.value = '';
+            } catch (error) {
+                showMessage('error', error.message);
+            }
+        });
+
+        saveButton.addEventListener('click', async () => {
+            try {
+                await saveDataset();
+            } catch (error) {
+                showMessage('error', error.message);
+            }
+        });
+
+        addQuestionButton.addEventListener('click', () => {
+            appendNewEntry();
+            showMessage('success', 'New question row added.');
+        });
+
+        addBottomButton.addEventListener('click', () => {
+            appendNewEntry();
+            showMessage('success', 'New question row added.');
+        });
+
+        datasetList.addEventListener('click', (event) => {
+            const deleteButton = event.target.closest('[data-action="delete"]');
+            if (!deleteButton) {
+                return;
+            }
+
+            const item = deleteButton.closest('.dataset-item');
+            if (!item) {
+                return;
+            }
+
+            item.remove();
+
+            if (!datasetList.querySelector('.dataset-item')) {
+                renderEditor([]);
+            } else {
+                renumberItems();
+            }
+
+            showMessage('success', 'Question removed. Click Save Dataset to keep the change.');
+        });
+
+        searchBox.addEventListener('input', applySearchFilter);
+
+        function openAdminPanel(password) {
+            adminKeyInput.value = password;
+            sessionStorage.setItem('pirateAuraAdminAccess', password);
+            loginScreen.hidden = true;
+            adminPage.hidden = false;
+            loadDataset().catch((error) => {
+                showMessage('error', error.message);
+            });
+        }
+
+        loginButton.addEventListener('click', () => {
+            const password = loginPassword.value.trim();
+
+            if (password !== ADMIN_PASSWORD) {
+                showLoginMessage('error', 'Incorrect password. Please try again.');
+                return;
+            }
+
+            showLoginMessage('success', 'Access granted.');
+            openAdminPanel(password);
+        });
+
+        loginPassword.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                loginButton.click();
+            }
+        });
+
+        const savedAccess = sessionStorage.getItem('pirateAuraAdminAccess');
+        if (savedAccess === ADMIN_PASSWORD) {
+            openAdminPanel(savedAccess);
+        }
+    </script>
+</body>
+</html>
